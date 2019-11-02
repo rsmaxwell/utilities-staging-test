@@ -1,0 +1,117 @@
+#!/bin/bash
+
+url="https://server.rsmaxwell.co.uk/archiva/repository"
+groupId="com.rsmaxwell.utilities"
+artifactId="utilities"
+packaging="jar"
+
+#*****************************************************************
+# Find the latest version of the artifactId
+#*****************************************************************
+mvn versions:use-latest-releases > stdout-version.txt
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+grep "<version>" pom.xml > temp.txt
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+line=$(tail -1 temp.txt)
+regex="<version>(.*)</version>"
+if [[ ${line} =~ ${regex} ]]
+then
+    version="${BASH_REMATCH[1]}"
+else
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+#*****************************************************************
+# Check to see if the artifact is already in the local repository
+#*****************************************************************
+if [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
+    home="$(cygpath -u $USERPROFILE)"
+else
+    home="${HOME}"
+fi
+filename=${artifactId}-${version}.${packaging}
+pathname=${home}/.m2/repository/${groupId//./\/}/${artifactId}/${version}/${filename}
+
+if [ ! -f ${pathname} ]; then
+
+    #*****************************************************************
+    # Download the latest version from the 'internal' repository
+    #*****************************************************************
+    if [ ! -f ${pathname} ]; then 
+        mvn dependency:get \
+            -DremoteRepositories=${url}/internal \
+            -DgroupId=${groupId} \
+            -DartifactId=${artifactId} \
+            -Dversion=${version} \
+            -Dpackaging=${packaging} > stdout-download.txt
+        result=$?
+        if [ ! $result == 0 ]; then
+            echo "$0[${LINENO}]"
+            echo "result = $result"
+            exit 1
+        fi
+    fi
+
+    if [ ! -f ${pathname} ]; then
+        echo "file not found: ${pathname}"
+        echo "$0[${LINENO}]"
+        echo "result = $result"
+        exit 1
+    fi
+fi
+
+#*****************************************************************
+# Deploy the artifact to the 'staging' repository
+#*****************************************************************
+cp ${pathname} .
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+mvn deploy:deploy-file \
+    -DgroupId=${groupId} \
+    -DartifactId=${artifactId} \
+    -Dversion=${version} \
+    -Dpackaging=${packaging} \
+    -Dfile=${filename} \
+    -DrepositoryId="staging" \
+    -Durl=${url}/staging > stdout-deploy.txt
+result=$?
+if [ $result == 0 ]; then
+    : # ok
+elif [ $result == 1 ]; then
+    line=$(grep "Failed to execute goal" stdout-deploy.txt)
+    regex='.*Return code is: ([0-9]+), .*'
+    if [[ ${line} =~ ${regex} ]]; then
+        code="${BASH_REMATCH[1]}"
+        if [ $code -eq 409 ]; then
+            echo "artifact [${groupId}:${artifactId}:${version}:${packaging}] already in the 'staging' repository"
+        else
+            echo "$0[${LINENO}]"
+            echo "result = $result"
+            echo "${line}"
+            exit 1
+        fi
+    fi
+else
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
