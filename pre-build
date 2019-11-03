@@ -132,4 +132,10 @@ mvn versions:use-latest-releases
 #*****************************************************************
 # Clean old builds
 #*****************************************************************
+set -x
+pwd
+ls -al 
+tree
+
 rm -rf ./target/utilities-test-*
+set +x
