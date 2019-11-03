@@ -1,5 +1,116 @@
 #!/bin/bash
 
+
+url="https://server.rsmaxwell.co.uk/archiva/repository"
+groupId="com.rsmaxwell.utilities-test"
+artifactId="utilities"
+packaging="jar"
+
+#*****************************************************************
+# Find the latest version of 'utilities'
+#*****************************************************************
+currentdir=$(pwd)
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+tempdir=$(maketemp -d -t "latest-XXXXXXXXXXXX")
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+cd ${tempdir}
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+cat << EOT > pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>junk</groupId>
+	<artifactId>junk</artifactId>
+	<version>junk</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.rsmaxwell.utilities</groupId>
+			<artifactId>utilities</artifactId>
+			<version>1</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>internal</id>
+			<url>https://server.rsmaxwell.co.uk/archiva/repository/internal</url>
+			<releases>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+</project>
+EOT
+
+mvn versions:use-latest-releases > stdout-version.txt
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+grep "<version>" pom.xml > temp.txt
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+line=$(tail -1 temp.txt)
+regex="<version>(.*)</version>"
+if [[ ${line} =~ ${regex} ]]
+then
+    version="${BASH_REMATCH[1]}"
+else
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+cd ${currentdir}
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+rm -rf ${tempdir}
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+#*****************************************************************
+# Make this project depend on the latest version of 'utils'
+#*****************************************************************
+
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
     
 find . -name "Version.java" | while read versionfile; do
@@ -15,5 +126,5 @@ find . -name "Version.java" | while read versionfile; do
 done
 
 mvn versions:set -DnewVersion=${version}
-mvn versions:use-releases
+mvn versions:use-dep-version -DdepVersion=${version} -Dincludes=com.rsmaxwell.utilities:utilities
 mvn versions:use-latest-releases
