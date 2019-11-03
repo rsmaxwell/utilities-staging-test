@@ -1,7 +1,6 @@
-package com.rsmaxwell.utilities.test;
+package com.rsmaxwell.utilities_test;
 
 import com.rsmaxwell.utilities.basic.Timestamp;
-import com.rsmaxwell.utilities.version.Version;
 
 public class Test {
 
