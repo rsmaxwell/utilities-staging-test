@@ -5,10 +5,11 @@ import com.rsmaxwell.utilities.basic.Timestamp;
 public class Test {
 
 	public static void main(String[] args) {
-		String buildID = Version.buildID(); 
-		String now = Timestamp.now();
-		System.out.println("BuildId: " + buildID);
-		System.out.println("Now: " + now);
-	}
+		
+		System.out.println("Version: " +  Version.version());
+		System.out.println("Now: " + Timestamp.now());
+		System.out.println("utilities_version: " + Version.utilities_version());
 
+		System.out.println("utilities.Version: " + com.rsmaxwell.utilities.Version.version());
+	}
 }

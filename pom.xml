@@ -22,7 +22,8 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
 				<configuration>
-					<mainClass>com.rsmaxwell.utilities.test.Test</mainClass>
+                    <executable>java</executable>
+					<mainClass>com.rsmaxwell.utilities_test.Test</mainClass>
 					<arguments>
 						<argument>argument1</argument>
 					</arguments>

@@ -3,13 +3,13 @@ package com.rsmaxwell.utilities_test;
 public class Version {
 
 	// buildID function
-	public static String buildID() {		
-		return "<BUILD_ID>";
+	public static String version() {		
+		return "<UTILITIES_TEST_VERSION>";
 	}
 
 	// buildDate function
 	public static String buildDate() {
-		return "<TIMESTAMP>";
+		return "<BUILD_DATE>";
 	}
 
 	// gitCommit function
@@ -27,8 +27,8 @@ public class Version {
 		return "<GIT_URL>";
 	}
 	
-	// version_utilities function
-	public static String version_utilities() {		
-		return "<VERSION_UTILITIES>";
+	// utilities_version function
+	public static String utilities_version() {		
+		return "<UTILITIES_VERSION>";
 	}
 }
