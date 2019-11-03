@@ -132,4 +132,4 @@ mvn versions:use-latest-releases
 #*****************************************************************
 # Clean old builds
 #*****************************************************************
-find target -maxdepth 1 -type f -exec rm -rf {} \;
+rm -ef ./target/utilities-test-*
