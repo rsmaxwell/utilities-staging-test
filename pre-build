@@ -141,7 +141,7 @@ if [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
 else
     home="${HOME}"
 fi
-filename=${artifactId}-${utilities_version}.${packaging}
+filename=${utilities_artifactId}-${utilities_version}.${packaging}
 pathname=${home}/.m2/repository/${groupId//./\/}/${utilities_artifactId}/${utilities_version}/${filename}
 
 if [ ! -f ${pathname} ]; then
