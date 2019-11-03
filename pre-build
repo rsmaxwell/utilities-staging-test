@@ -125,6 +125,6 @@ find . -name "Version.java" | while read versionfile; do
     sed -i "s@<UTILITIES_VERSION>@${version}@g"       ${versionfile}
 done
 
-mvn versions:set -DnewVersion=${version}
+mvn versions:set -DnewVersion=${BUILD_ID}
 mvn versions:use-dep-version -DdepVersion=${version} -Dincludes=com.rsmaxwell.utilities:utilities
 mvn versions:use-latest-releases
