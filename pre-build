@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 
 url="https://server.rsmaxwell.co.uk/archiva/repository"
 groupId="com.rsmaxwell.utilities-test"
@@ -127,15 +128,59 @@ done
 mvn versions:set -DnewVersion=${BUILD_ID}
 mvn versions:use-dep-version -DdepVersion=${version} -Dincludes=com.rsmaxwell.utilities:utilities
 mvn versions:use-latest-releases
-
+mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${version} -Dpackaging=${packaging} -DremoteRepositories=${url}
 
 #*****************************************************************
-# Clean old builds
+# Get the 'utilities' artifact 
 #*****************************************************************
-set -x
-pwd
-ls -al 
-tree
+if [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
+    home="$(cygpath -u $USERPROFILE)"
+else
+    home="${HOME}"
+fi
+filename=${artifactId}-${version}.${packaging}
+pathname=${home}/.m2/repository/${groupId//./\/}/${artifactId}/${version}/${filename}
 
-rm -rf ./target/utilities-test-*
-set +x
+if [ ! -f ${pathname} ]; then
+
+    #*****************************************************************
+    # Download the latest version from the 'internal' repository
+    #*****************************************************************
+    if [ ! -f ${pathname} ]; then 
+        mvn dependency:get \
+            -DremoteRepositories=${url}/internal \
+            -DgroupId=${groupId} \
+            -DartifactId=${artifactId} \
+            -Dversion=${version} \
+            -Dpackaging=${packaging} > stdout-download.txt
+        result=$?
+        if [ ! $result == 0 ]; then
+            echo "$0[${LINENO}]"
+            echo "result = $result"
+            exit 1
+        fi
+    fi
+fi
+
+if [ ! -f ${pathname} ]; then
+    echo "file not found: ${pathname}"
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+mkdir -p target
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+cp ${pathname} target/
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
