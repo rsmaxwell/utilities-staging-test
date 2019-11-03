@@ -3,9 +3,12 @@
 set -x
 
 url="https://server.rsmaxwell.co.uk/archiva/repository"
-groupId="com.rsmaxwell.utilities-test"
-artifactId="utilities"
+
+groupId="com.rsmaxwell.utilities"
+artifactId="utilities-test"
 packaging="jar"
+
+utilities_artifactId="utilities"
 
 #*****************************************************************
 # Find the latest version of 'utilities'
@@ -46,8 +49,8 @@ cat << EOT > pom.xml
 
 	<dependencies>
 		<dependency>
-			<groupId>com.rsmaxwell.utilities</groupId>
-			<artifactId>utilities</artifactId>
+			<groupId>${groupId}</groupId>
+			<artifactId>${utilities_artifactId}</artifactId>
 			<version>1</version>
 		</dependency>
 	</dependencies>
@@ -85,7 +88,7 @@ line=$(tail -1 temp.txt)
 regex="<version>(.*)</version>"
 if [[ ${line} =~ ${regex} ]]
 then
-    version="${BASH_REMATCH[1]}"
+    utility_version="${BASH_REMATCH[1]}"
 else
     echo "$0[${LINENO}]"
     echo "result = $result"
@@ -117,18 +120,18 @@ find . -name "Version.java" | while read versionfile; do
 
     echo "Replacing tags in ${versionfile}"
     
-    sed -i "s@<UTILITIES_TEST_VERSION>@${BUILD_ID}@g" ${versionfile}
-    sed -i "s@<BUILD_DATE>@${TIMESTAMP}@g"            ${versionfile}
-    sed -i "s@<GIT_COMMIT>@${GIT_COMMIT}@g"           ${versionfile}
-    sed -i "s@<GIT_BRANCH>@${GIT_BRANCH}@g"           ${versionfile}
-    sed -i "s@<GIT_URL>@${GIT_URL}@g"                 ${versionfile}
-    sed -i "s@<UTILITIES_VERSION>@${version}@g"       ${versionfile}
+    sed -i "s@<UTILITIES_TEST_VERSION>@${BUILD_ID}@g"     ${versionfile}
+    sed -i "s@<BUILD_DATE>@${TIMESTAMP}@g"                ${versionfile}
+    sed -i "s@<GIT_COMMIT>@${GIT_COMMIT}@g"               ${versionfile}
+    sed -i "s@<GIT_BRANCH>@${GIT_BRANCH}@g"               ${versionfile}
+    sed -i "s@<GIT_URL>@${GIT_URL}@g"                     ${versionfile}
+    sed -i "s@<UTILITIES_VERSION>@${utilities_version}@g" ${versionfile}
 done
 
 mvn versions:set -DnewVersion=${BUILD_ID}
-mvn versions:use-dep-version -DdepVersion=${version} -Dincludes=com.rsmaxwell.utilities:utilities
+mvn versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rsmaxwell.utilities:utilities
 mvn versions:use-latest-releases
-mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${version} -Dpackaging=${packaging} -DremoteRepositories=${url}
+mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${utilities_version} -Dpackaging=${packaging} -DremoteRepositories=${url}
 
 #*****************************************************************
 # Get the 'utilities' artifact 
@@ -138,29 +141,8 @@ if [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
 else
     home="${HOME}"
 fi
-filename=${artifactId}-${version}.${packaging}
-pathname=${home}/.m2/repository/${groupId//./\/}/${artifactId}/${version}/${filename}
-
-if [ ! -f ${pathname} ]; then
-
-    #*****************************************************************
-    # Download the latest version from the 'internal' repository
-    #*****************************************************************
-    if [ ! -f ${pathname} ]; then 
-        mvn dependency:get \
-            -DremoteRepositories=${url}/internal \
-            -DgroupId=${groupId} \
-            -DartifactId=${artifactId} \
-            -Dversion=${version} \
-            -Dpackaging=${packaging} > stdout-download.txt
-        result=$?
-        if [ ! $result == 0 ]; then
-            echo "$0[${LINENO}]"
-            echo "result = $result"
-            exit 1
-        fi
-    fi
-fi
+filename=${artifactId}-${utilities_version}.${packaging}
+pathname=${home}/.m2/repository/${groupId//./\/}/${utilities_artifactId}/${utilities_version}/${filename}
 
 if [ ! -f ${pathname} ]; then
     echo "file not found: ${pathname}"
