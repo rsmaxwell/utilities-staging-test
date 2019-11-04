@@ -2,7 +2,7 @@ package com.rsmaxwell.utilities_test;
 
 public class Version {
 
-	// buildID function
+	// version function
 	public static String version() {		
 		return "<UTILITIES_TEST_VERSION>";
 	}
