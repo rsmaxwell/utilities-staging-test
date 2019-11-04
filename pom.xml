@@ -34,14 +34,22 @@
 			<url>https://server.rsmaxwell.co.uk/archiva/repository/snapshots</url>
 			<snapshots>
 				<updatePolicy>always</updatePolicy>
+				<enabled>true</enabled>
 			</snapshots>
+			<releases>
+			    <enabled>false</enabled>
+			</releases>
 		</repository>
 		<repository>
 			<id>internal</id>
 			<url>https://server.rsmaxwell.co.uk/archiva/repository/internal</url>
 			<releases>
 				<updatePolicy>always</updatePolicy>
+                <enabled>true</enabled>				
 			</releases>
+			<snapshots>
+			    <enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
