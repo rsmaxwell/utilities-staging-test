@@ -13,7 +13,7 @@ utilities_artifactId="utilities"
 #*****************************************************************
 # Clean previous built jars
 #*****************************************************************
-rm -rf "./target/${artifactId}-*"
+rm -rf ./target/${artifactId}-*
 result=$?
 if [ ! $result == 0 ]; then
     echo "$0[${LINENO}]"
