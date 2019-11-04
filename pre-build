@@ -150,4 +150,4 @@ mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversio
 #*****************************************************************
 # Execute the built program
 #*****************************************************************
-mvn exec:exec
+mvn -e -X exec:exec
