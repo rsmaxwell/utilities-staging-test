@@ -133,36 +133,4 @@ mvn versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rs
 mvn versions:use-latest-releases
 mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${utilities_version} -Dpackaging=${packaging} -DremoteRepositories=${url}
 
-#*****************************************************************
-# Get the 'utilities' artifact 
-#*****************************************************************
-if [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
-    home="$(cygpath -u $USERPROFILE)"
-else
-    home="${HOME}"
-fi
-filename=${utilities_artifactId}-${utilities_version}.${packaging}
-pathname=${home}/.m2/repository/${groupId//./\/}/${utilities_artifactId}/${utilities_version}/${filename}
-
-if [ ! -f ${pathname} ]; then
-    echo "file not found: ${pathname}"
-    echo "$0[${LINENO}]"
-    echo "result = $result"
-    exit 1
-fi
-
-mkdir -p target
-result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
-    exit 1
-fi
-
-cp ${pathname} target/
-result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
-    exit 1
-fi
+mvn exec:java
