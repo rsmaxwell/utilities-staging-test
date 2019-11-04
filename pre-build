@@ -11,6 +11,17 @@ packaging="jar"
 utilities_artifactId="utilities"
 
 #*****************************************************************
+# Clean previous built jars
+#*****************************************************************
+rm -rf "./target/${artifactId}-*"
+result=$?
+if [ ! $result == 0 ]; then
+    echo "$0[${LINENO}]"
+    echo "result = $result"
+    exit 1
+fi
+
+#*****************************************************************
 # Find the latest version of 'utilities'
 #*****************************************************************
 currentdir=$(pwd)
@@ -112,7 +123,7 @@ if [ ! $result == 0 ]; then
 fi
 
 #*****************************************************************
-# Make this project depend on the latest version of 'utils'
+# Replace tags in the source for the Version class
 #*****************************************************************
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
     
@@ -128,9 +139,15 @@ find . -name "Version.java" | while read versionfile; do
     sed -i "s@<UTILITIES_VERSION>@${utilities_version}@g" ${versionfile}
 done
 
+#*****************************************************************
+# Update the version
+#*****************************************************************
 mvn versions:set -DnewVersion=${BUILD_ID}
 mvn versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rsmaxwell.utilities:utilities
 mvn versions:use-latest-releases
 mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${utilities_version} -Dpackaging=${packaging} -DremoteRepositories=${url}
 
+#*****************************************************************
+# Execute the built program
+#*****************************************************************
 mvn exec:exec
