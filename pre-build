@@ -147,7 +147,3 @@ mvn versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rs
 mvn versions:use-latest-releases
 mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${utilities_version} -Dpackaging=${packaging} -DremoteRepositories=${url}
 
-#*****************************************************************
-# Execute the built program
-#*****************************************************************
-mvn -e -X exec:exec

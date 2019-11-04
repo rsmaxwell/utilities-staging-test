@@ -17,23 +17,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.6.0</version>
-				<configuration>
-					<executable>java</executable>
-					<arguments>
-						<argument>-classpath</argument>
-						<classpath>
-							<dependency>com.rsmaxwell.utilities:utilities</dependency>
-							<dependency>com.rsmaxwell.utilities:utilities-test</dependency>
-						</classpath>
-						<argument>com.rsmaxwell.utilities_test.Test</argument>
-						<argument>argument1</argument>
-					</arguments>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -59,13 +42,6 @@
 			<releases>
 				<updatePolicy>always</updatePolicy>
 			</releases>
-		</repository>
-		<repository>
-			<id>staging</id>
-			<url>https://server.rsmaxwell.co.uk/archiva/repository/staging</url>
-			<snapshots>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
 		</repository>
 	</repositories>
 
