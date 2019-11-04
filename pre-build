@@ -145,5 +145,4 @@ done
 mvn versions:set -DnewVersion=${BUILD_ID}
 mvn versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rsmaxwell.utilities:utilities
 mvn versions:use-latest-releases
-mvn dependency:get -DgroupId=${groupId//.//} -DartifactId=${artifactId} -Dversion=${utilities_version} -Dpackaging=${packaging} -DremoteRepositories=${url}
 
