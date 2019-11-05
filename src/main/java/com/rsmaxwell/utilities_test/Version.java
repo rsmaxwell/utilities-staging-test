@@ -2,6 +2,14 @@ package com.rsmaxwell.utilities_test;
 
 public class Version {
 
+
+	public static void main(String[] args) {
+		System.out.println("{");
+     	System.out.println("   \"version\": \"" +  version() + "\",");
+     	System.out.println("   \"utilities_version\": \"" +  utilities_version() + "\"");
+		System.out.println("}");
+	}
+	
 	// version function
 	public static String version() {		
 		return "<UTILITIES_TEST_VERSION>";
