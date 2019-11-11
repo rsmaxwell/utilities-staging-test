@@ -79,11 +79,14 @@ cat << EOT > pom.xml
 </project>
 EOT
 
-mvn versions:use-latest-releases > stdout-version.txt
+mvn --batch-mode --log-file output.txt versions:use-latest-releases
 result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
     exit 1
 fi
 
@@ -144,7 +147,35 @@ done
 #*****************************************************************
 # Update the version
 #*****************************************************************
-mvn versions:set -DnewVersion=${BUILD_ID}
-mvn versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rsmaxwell.utilities:utilities
-mvn versions:use-latest-releases
+mvn --batch-mode --log-file output.txt versions:set -DnewVersion=${BUILD_ID}
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
+    exit 1
+fi
 
+mvn --batch-mode --log-file output.txt versions:use-dep-version -DdepVersion=${utilities_version} -Dincludes=com.rsmaxwell.utilities:utilities
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
+    exit 1
+fi
+
+mvn --batch-mode --log-file output.txt versions:use-latest-releases
+result=$?
+if [ ! ${result} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
+    echo "result: ${result}"
+    echo "----[ output.txt ]--------------------------"
+    cat output.txt
+    echo "----------------------------------------"
+    exit 1
+fi
