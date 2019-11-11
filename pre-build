@@ -87,19 +87,17 @@ if [ ! $result == 0 ]; then
     exit 1
 fi
 
-grep "<version>" pom.xml > temp.txt
-result=$?
-if [ ! $result == 0 ]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+while [ ! -f pom.xml ]; do sleep 1; done
+
+line=$(grep "<version>" pom.xml | head -n 2 | tail -n 1)
+if [ ${#line} == 0 ]; then
+    echo "Error: $0[${LINENO}]"
     exit 1
 fi
 
-line=$(tail -1 temp.txt)
 regex="<version>(.*)</version>"
 if [[ ! ${line} =~ ${regex} ]]; then
-    echo "$0[${LINENO}]"
-    echo "result = $result"
+    echo "Error: $0[${LINENO}]"
     exit 1
 fi
 
