@@ -89,6 +89,10 @@ fi
 
 while [ ! -f pom.xml ]; do sleep 1; done
 
+echo "---[ pom.xml ]---------------------------------"
+cat pom.xml
+echo "-----------------------------------------------"
+
 line=$(grep "<version>" pom.xml | head -n 2 | tail -n 1)
 if [ ${#line} == 0 ]; then
     echo "Error: $0[${LINENO}]"
